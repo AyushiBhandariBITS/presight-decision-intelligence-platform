@@ -3,7 +3,7 @@ import time
 import pandas as pd
 
 st.set_page_config(layout="wide")
-st.title("Decision Intelligence Demo")
+st.title("Decision Casual Intelligence Demo")
 
 # -----------------------------
 # SCENARIOS + INTERVENTIONS
