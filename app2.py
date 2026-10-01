@@ -53,7 +53,7 @@ scenarios = {
         "factors": ["Poor Lighting", "High Speed", "Rain", "Congestion"]
     },
 
-    "Hospital Capacity Management": {
+    "Hospital Capacity Management Issue": {
         "description": "Analyzing ICU overload risk based on admissions, staffing, and discharge delays.",
         "base_risk": 78,
         "interventions": {
