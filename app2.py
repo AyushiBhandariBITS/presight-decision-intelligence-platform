@@ -1,332 +1,174 @@
 import streamlit as st
-import time
 import pandas as pd
+import time
+from decision_orchestrator import AbuDhabiDecisionOrchestrator
 
-st.set_page_config(layout="wide")
-st.title("Decision Casual Intelligence Demo")
+# --- 1. INITIALIZATION & LAYOUT CONFIGURATION ---
+st.set_page_config(
+    page_title="Presight Decision Intelligence Platform", 
+    layout="wide"
+)
 
-# -----------------------------
-# SCENARIOS + INTERVENTIONS
-# -----------------------------
+# Initialize the causal architecture once per user session lifetime
+if 'orchestrator' not in st.session_state:
+    with st.spinner("Synchronizing Causal AI Archetypes..."):
+        st.session_state.orchestrator = AbuDhabiDecisionOrchestrator(model_directory=".")
+        # Pre-set mock parameters matching your test scenarios
+        st.session_state.visibility = 8.0  # Severe fog sequence from your test script
+        st.session_state.base_rate = 0.4
+        st.session_state.temperature = 22.0
+        st.session_state.is_highway = 1     # Sector E11 is a high-speed intercity highway
 
-scenarios = {
-    "Urban Traffic Safety": {
-        "description": "Analyzing accident risk based on lighting, speed, congestion, and weather.",
-        "base_risk": 84,
-        "interventions": {
-            "Improve Lighting": {
-                "delta": -22,
-                "pros": [
-                    "Better visibility in fog and rain\n",
-                    "- Reduces accident probability by ~10-22%\n"
-                ],
-                "cons": [
-                    "Increases energy cost by ~2%\n",
-                    "- Requires maintenance budget\n"
-                ]
-            },
-            "Reduce Speed Limit": {
-                "delta": -18,
-                "pros": [
-                    "Reduces high-speed collisions\n",
-                    "- Improves pedestrian safety\n"
-                ],
-                "cons": [
-                    "May increase travel time\n",
-                    "- Requires enforcement\n"
-                ]
-            },
-            "Increase Bus Frequency": {
-                "delta": -13,
-                "pros": [
-                    "Reduces private vehicle usage\n",
-                    "- Lowers congestion by ~8%\n"
-                ],
-                "cons": [
-                    "Increases fuel usage by ~5%\n",
-                    "- Adds operational cost\n"
-                ]
+orchestrator = st.session_state.orchestrator
+
+# Pre-load a default recommendation array so the panel doesn't see a blank panel on boot
+if 'recommendations' not in st.session_state:
+    st.session_state.recommendations = orchestrator.compute_policy_recommendations(
+        weather_severity=st.session_state.visibility,
+        base_rate=st.session_state.base_rate,
+        temperature=st.session_state.temperature,
+        is_highway=st.session_state.is_highway,
+        weights={'risk': 0.6, 'cost': 0.2, 'time': 0.2}
+    )
+
+# --- 2. ENHANCED BRAND STYLING INJECTIONS ---
+st.markdown("""
+    <style>
+    .stApp { background-color: #000B26; color: #FFFFFF; }
+    h1, h2, h3, h4, p, span, div { color: #FFFFFF !important; }
+    .risk-banner { background: #260C14; border: 1px solid #FF3B30; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 15px; }
+    .rec-card-gold { background: #11283B; border: 1px solid #00E575; border-left: 6px solid #00E575; border-radius: 8px; padding: 15px; margin-bottom: 12px; }
+    .rec-card-normal { background: #0B1936; border: 1px solid #00D2FF; border-left: 6px solid #00D2FF; border-radius: 8px; padding: 15px; margin-bottom: 12px; }
+    .stButton>button { background-color: #00E575 !important; color: #000B26 !important; font-weight: bold !important; border: none !important; width: 100%; }
+    code { background-color: #0B1936 !important; color: #00D2FF !important; }
+    </style>
+""", unsafe_allow_html=True)
+
+st.title("📊 Presight Decision Intelligence Platform")
+st.caption("Abu Dhabi Traffic Operations Systems — Graduate Program Assessment Prototype")
+st.markdown("---")
+
+# =========================================================================
+# --- ROW 1: LIVE PREDICTIVE LAYER ---
+# =========================================================================
+with st.container():
+    st.subheader("1. Predictive Baseline")
+    
+    # Glowing Alert Card displaying baseline parameters
+    st.markdown("""
+        <div class="risk-banner">
+            <h4 style="color:#FF3B30; margin:0;">🚨 High Accident Risk Forecast</h4>
+            <p style="margin:5px 0 0 0; font-size:28px; font-weight:bold; font-family:monospace;">74% Risk Tomorrow</p>
+            <p style="margin:2px 0 0 0; font-size:13px; color:#A0A0A0;">Location Zone: Abu Dhabi Sector E11</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("**Correlation Engine Insights:**")
+    st.caption("Standard AI model links heavy morning fog, GPS slowdowns, and peak camera density to historical incident trends. *No mitigation evaluated yet.*")
+    
+    # Interactive variables display panel for the tech panel
+    st.markdown("**Active Environment Telemetry Vector:**")
+    st.text(f"• Visibility Deficit: {st.session_state.visibility} Index\n"
+            f"• Core Infrastructure: Intercity Highway (E11)\n"
+            f"• Pavement Surface Temp: {st.session_state.temperature}°C")
+
+st.markdown("---")
+
+# =========================================================================
+# --- ROW 2: INNOVATION & POLICY SANDBOX ---
+# =========================================================================
+with st.container():
+    st.subheader("🎛️ 2. Policy Intervention Sandbox")
+    st.write("Adjust the proposed operational variables to run real-time **Counterfactual Analysis**:")
+    
+    # Your Sliders and Selection Toggles
+    speed_drop = st.slider("Smart Speed Limit Drops (km/h reduction)", 0, 40, 20, step=10)
+    signal_timing = st.select_slider("Signal Timing Optimization Flow", options=["Standard", "Balanced", "Synchronized Flow"], value="Balanced")
+    nav_detours = st.checkbox("Enable Live App Navigation Detours", value=True)
+    transit_flow = st.checkbox("Public Transit Flow Synchronization", value=False)
+    
+    st.write("⛓️ **Causal Graph Logic Node Extract (Neo4j Context):**")
+    st.code(f"Weather (Fog) ──> [Speed Limit Drop: -{speed_drop}km/h] ──> Traffic Density ──> Incident Risk", language="text")
+    
+    # Functional Button Trigger executing CATE model recalculations
+    if st.button("🔮 Run Structural Counterfactual Simulation"):
+        with st.spinner("Processing Causal Graph via EconML engine..."):
+            time.sleep(1.2) # Keeps your clean micro-animation loader intact
+            
+            # Formulate variable weights based dynamically on the checkbox/slider states
+            risk_priority_weight = 0.4 + (speed_drop / 100.0) + (0.1 if nav_detours else 0.0)
+            custom_weights = {
+                'risk': min(risk_priority_weight, 0.8),
+                'cost': max(0.1, 0.4 - (speed_drop / 200.0)),
+                'time': max(0.1, 0.2)
             }
-        },
-        "best_intervention":"Improve Lighting",
-        "best_score":62,
-        "factors": ["Poor Lighting", "High Speed", "Rain", "Congestion"]
-    },
+            
+            # Execute live inference via your serialized EconML model files
+            st.session_state.recommendations = orchestrator.compute_policy_recommendations(
+                weather_severity=st.session_state.visibility,
+                base_rate=st.session_state.base_rate,
+                temperature=st.session_state.temperature,
+                is_highway=st.session_state.is_highway,
+                weights=custom_weights
+            )
+        st.success("Simulation Complete! Optimization matrices updated below.")
 
-    "Hospital Capacity Management Issue": {
-        "description": "Analyzing ICU overload risk based on admissions, staffing, and discharge delays.",
-        "base_risk": 78,
-        "interventions": {
-            "Add Night-Shift Staff": {
-                "delta": -21,
-                "pros": [
-                    "Reduces patient wait time\n",
-                    "- Improves ICU throughput\n"
-                ],
-                "cons": [
-                    "Higher staffing cost\n",
-                    "- Training required\n"
-                ]
-            },
-            "Accelerate Discharge Process": {
-                "delta": -17,
-                "pros": [
-                    "Frees up beds faster\n",
-                    "- Reduces ICU bottlenecks\n"
-                ],
-                "cons": [
-                    "Requires coordination\n",
-                    "- Risk of premature discharge\n"
-                ]
-            },
-            "Deploy Mobile ICU Units": {
-                "delta": -12,
-                "pros": [
-                    "Adds emergency capacity\n",
-                    "- Useful during surges\n"
-                ],
-                "cons": [
-                    "Very high cost\n",
-                    "- Logistical complexity\n"
-                ]
-            }
-        },
-        "best_intervention":"Add Night-Shift Staff",
-        "best_score":67,
-        "factors": ["High Admissions", "Low Staffing", "ICU Overload", "Delayed Discharges"]
-    },
+st.markdown("---")
 
-    "Energy Load Balancing": {
-        "description": "Analyzing grid overload risk based on demand peaks, reserve margins, and weather.",
-        "base_risk": 81,
-        "interventions": {
-            "Demand Response Program": {
-                "delta": -23,
-                "pros": [
-                    "Flattens peak demand\n",
-                    "- Reduces overload risk significantly\n"
-                ],
-                "cons": [
-                    "Requires customer participation\n",
-                    "- May reduce comfort levels\n"
-                ]
-            },
-            "Activate Backup Generators": {
-                "delta": -16,
-                "pros": [
-                    "Instant reserve capacity\n",
-                    "- Stabilizes grid during peaks\n"
-                ],
-                "cons": [
-                    "High fuel cost\n",
-                    "- Environmental impact\n"
-                ]
-            },
-            "Increase Solar Utilization": {
-                "delta": -11,
-                "pros": [
-                    "Reduces reliance on fossil fuels\n",
-                    "- Adds daytime capacity\n"
-                ],
-                "cons": [
-                    "Weather dependent\n",
-                    "- Requires storage systems\n"
-                ]
-            }
-        },
-        "best_intervention":"Demand Response Program",
-        "best_score":58,
-        "factors": ["Peak Demand", "Low Reserve", "Heat Wave", "Grid Constraints"]
-    },
+# =========================================================================
+# --- ROW 3: DECISION MATRIX & RANKING ---
+# =========================================================================
+with st.container():
+    st.subheader("🏆 3. Intervention Ranking Matrix")
+    
+    # 1. Map dynamic risk adjustments using actual calculations from your models
+    total_mitigation_magnitude = 0.0
+    for rec in st.session_state.recommendations:
+        # Extract the float point risk numbers from your recommendation strings
+        numeric_drop = float(rec['risk_mitigation'].split()[0].replace('-', ''))
+        
+        # Check active status flags from the sandbox inputs to construct the live metric card score
+        if rec['raw_policy_key'] == 'Speed_Limit_Drop_Applied' and speed_drop > 0:
+            total_mitigation_magnitude += numeric_drop * (speed_drop / 20.0) # Scale effect size by slider intensity
+        elif rec['raw_policy_key'] == 'Nav_Detour_Triggered' and nav_detours:
+            total_mitigation_magnitude += numeric_drop
+        elif rec['raw_policy_key'] == 'Transit_Flow_Sync_Active' and transit_flow:
+            total_mitigation_magnitude += numeric_drop
+            
+    # Calculate final updated risk values matching user actions
+    final_risk = max(74.0 - total_mitigation_magnitude, 12.0)
+    
+    # Main dynamic dashboard KPI indicator card
+    st.metric(
+        label="Simulated Risk Level Post-Intervention", 
+        value=f"{final_risk:.1f}%", 
+        delta=f"-{total_mitigation_magnitude:.1f}% Risk Reduction"
+    )
+    
+    st.markdown("**Top Recommended Action Frameworks:**")
+    st.caption("Ordered multi-objective ranking based on CATE impact matrices, budget fees, and real-time network lag:")
+    
+        # 2. Loop through your model payloads to build high-fidelity interface cards
+    for rec in st.session_state.recommendations:
+        card_class = "rec-card-gold" if rec['rank'] == 1 else "rec-card-normal"
+        badge = "⭐ SYSTEM OPTIMAL PATH" if rec['rank'] == 1 else f"STRATEGY RANK #{rec['rank']}"
+        
+        st.markdown(f"""
+            <div class="{card_class}">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0; color: #FFFFFF; font-weight: bold;">{rec['policy_name']}</h4>
+                    <span style="font-size: 10px; font-weight: bold; background: #000B26; padding: 2px 6px; border-radius: 4px; border: 1px solid #00D2FF;">{badge}</span>
+                </div>
+                <hr style="margin: 8px 0; opacity: 0.15; border-color: #00D2FF;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 12px; line-height: 1.4;">
+                    <span>📉 <b>Causal CATE Drop:</b><br><span style="color:#FF3B30;">{rec['risk_mitigation']}</span></span>
+                    <span>💰 <b>Est. Cost (AED):</b><br>{rec['cost_profile']}</span>
+                    <span>⏱️ <b>Deployment Net Lag:</b><br>{rec['time_profile']}</span>
+                </div>
+                <div style="margin-top: 8px; font-size: 11px; color: #A0A0A0;">
+                    🛡️ <b>Engine Confidence Score: {rec['score']}/100</b> — Verified via placebo validation loops.
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
 
-    "Water Distribution": {
-        "description": "Analyzing water shortage risk based on consumption, leakage, and supply variability.",
-        "base_risk": 74,
-        "interventions": {
-            "Fix Pipeline Leaks": {
-                "delta": -20,
-                "pros": [
-                    "Reduces water loss by ~15%\n",
-                    "- Improves pressure stability\n"
-                ],
-                "cons": [
-                    "Requires field crews\n",
-                    "- High repair cost\n"
-                ]
-            },
-            "Smart Metering": {
-                "delta": -14,
-                "pros": [
-                    "Detects abnormal usage\n",
-                    "- Improves demand forecasting\n"
-                ],
-                "cons": [
-                    "Installation cost\n",
-                    "- Requires customer adoption\n"
-                ]
-            },
-            "Increase Reservoir Release": {
-                "delta": -10,
-                "pros": [
-                    "Instant supply boost\n",
-                    "- Reduces shortage risk\n"
-                ],
-                "cons": [
-                    "Depletes reserves\n",
-                    "- Not sustainable long-term\n"
-                ]
-            }
-        },
-        "best_intervention":"Fix Pipeline Leaks",
-        "best_score":54,
-        "factors": ["High Consumption", "Leakage", "Low Reservoir Levels", "Supply Variability"]
-    },
-
-    "Public Safety Deployment": {
-        "description": "Analyzing emergency response delay risk based on call volume, unit distance, and traffic.",
-        "base_risk": 76,
-        "interventions": {
-            "Reposition Patrol Units": {
-                "delta": -19,
-                "pros": [
-                    "Reduces response time\n",
-                    "- Improves coverage\n"
-                ],
-                "cons": [
-                    "May leave other areas exposed\n",
-                    "- Requires real-time coordination\n"
-                ]
-            },
-            "Increase Patrol Vehicles": {
-                "delta": -15,
-                "pros": [
-                    "More units available\n",
-                    "- Better peak-time coverage\n"
-                ],
-                "cons": [
-                    "High cost\n",
-                    "- Requires staffing\n"
-                ]
-            },
-            "Traffic Signal Priority": {
-                "delta": -11,
-                "pros": [
-                    "Faster emergency movement\n",
-                    "- Reduces delay by ~6%\n"
-                ],
-                "cons": [
-                    "Requires city-wide integration\n",
-                    "- May disrupt normal traffic\n"
-                ]
-            }
-        },
-        "best_intervention":"Reposition Patrol Units",
-        "best_score":57,
-        "factors": ["High Call Volume", "Unit Distance", "Traffic Congestion", "Dispatch Delays"]
-    }
-}
-
-# -----------------------------
-# SIDEBAR
-# -----------------------------
-
-scenario = st.sidebar.selectbox("Select Scenario", list(scenarios.keys()))
-intervention = st.sidebar.selectbox("Select Intervention", list(scenarios[scenario]["interventions"].keys()))
-run = st.sidebar.button("Run Analysis")
-
-# -----------------------------
-# MAIN PAGE
-# -----------------------------
-
-st.write(f"### Scenario: {scenario}")
-st.write(scenarios[scenario]["description"])
-
-if run:
-    st.header("Running Decision Intelligence Pipeline...")
-    progress = st.progress(0)
-
-    # 1. Load Operational Data
-    with st.spinner("Loading operational data..."):
-        time.sleep(1.8)
-        progress.progress(10)
-    st.success("Operational data loaded.")
-
-    # 2. Existing AI Prediction
-    with st.spinner("Running prediction model..."):
-        time.sleep(1.8)
-        progress.progress(25)
-
-    base_risk = scenarios[scenario]["base_risk"]
-    st.metric(f"{scenario} Risk Tomorrow", f"{base_risk}%")
-
-    # 3. Structural Causal Model
-    with st.spinner("Building structural causal model..."):
-        time.sleep(1.5)
-        progress.progress(45)
-
-    causal_data = pd.DataFrame({
-        "Factor": scenarios[scenario]["factors"],
-        "Impact": [22, 18, 12, 9]
-    })
-    st.bar_chart(causal_data.set_index("Factor"))
-
-    # 4. Counterfactual Simulation
-    with st.spinner("Running counterfactual simulation..."):
-        time.sleep(1.5)
-        progress.progress(65)
-
-    delta = scenarios[scenario]["interventions"][intervention]["delta"]
-    new_risk = base_risk + delta
-
-    st.metric(f"Risk After Intervention ({intervention})", f"{new_risk}%")
-
-    # Explanation of WHY the percentage changed
-    st.subheader("Why this percentage?")
-    st.write(f"""
-The new risk value of **{new_risk}%** is calculated by applying the causal impact  
-(**{delta} percentage points**) of **{intervention}** to the baseline risk (**{base_risk}%**).
-""")
-    st.info("""This causal impact is derived from:
-- how strongly the intervention influences the top causal factors  
-- historical observational data  
-- simulation of alternative outcomes  
-- counterfactual reasoning (what would happen if we changed X?)  
-
-In real deployment, these values come from DoWhy/EconML models trained on real operational data.
-""")
-
-    # 5. Intervention Ranking
-    with st.spinner("Optimizing intervention ranking..."):
-        time.sleep(1.5)
-        progress.progress(85)
-
-    ranking = pd.DataFrame({
-        "Intervention": list(scenarios[scenario]["interventions"].keys()),
-        "Impact": [f"{scenarios[scenario]['interventions'][i]['delta']}%" for i in scenarios[scenario]["interventions"]],
-        "Pros": ["; ".join(scenarios[scenario]["interventions"][i]["pros"]) for i in scenarios[scenario]["interventions"]],
-        "Cons": ["; ".join(scenarios[scenario]["interventions"][i]["cons"]) for i in scenarios[scenario]["interventions"]],
-    })
-    st.subheader("Intervention Ranking")
-    st.table(ranking)
-
-    # 6. Explanation Layer
-    with st.spinner("Generating explanation..."):
-        time.sleep(1.2)
-        progress.progress(100)
-
-    st.subheader("Causal Explanation")
-    st.write(f"""
-**Scenario:** {scenario}  
-**Intervention:** {intervention}  
-
-**Pros:**  
-- {chr(10).join(scenarios[scenario]["interventions"][intervention]["pros"])}
-
-**Cons:**  
-- {chr(10).join(scenarios[scenario]["interventions"][intervention]["cons"])}
-""")
-    st.info("""This intervention modifies key causal factors, which is why it produces the  observed reduction in risk. The structural causal model quantifies this impact and the simulation engine validates it.
-""")
-
-    # 7. Final Recommendation
-    st.success(f"Recommended Intervention: {scenarios[scenario]["best_intervention"]} (Confidence: {scenarios[scenario]["best_score"]})")
+    
