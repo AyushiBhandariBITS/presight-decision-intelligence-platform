@@ -87,9 +87,6 @@ with st.container():
     nav_detours = st.checkbox("Enable Live App Navigation Detours", value=True)
     transit_flow = st.checkbox("Public Transit Flow Synchronization", value=False)
     
-    st.write("⛓️ **Causal Graph Logic Node Extract (Neo4j Context):**")
-    st.code(f"Weather (Fog) ──> [Speed Limit Drop: -{speed_drop}km/h] ──> Traffic Density ──> Incident Risk", language="text")
-    
     # Functional Button Trigger executing CATE model recalculations
     if st.button("🔮 Run Structural Counterfactual Simulation"):
         with st.spinner("Processing Causal Graph via EconML engine..."):
